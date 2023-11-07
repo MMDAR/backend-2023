@@ -17,12 +17,43 @@ class StudentController extends Controller
             'data' => $students
         ];
 
+        // jika data kosong
+        if ($students->isEmpty()) {
+            $data =[
+                'message'=> 'kosong',
+            ];
+            return response()->json($data,204);
+        }
+
         // Mengirim data (json) dan kode 200
         return response()->json($data, 200);
     }
 
+    public function show($id){
+    $student = Student::find($id);
+       if (!$student) {
+    $data = [
+        'message'=> 'Data not found'
+        ];
+        return response()->json($data,404);
+    }
+    $data = [
+        'message'=> 'Show detail resource',
+        'data'=> $student
+        ];
+        return response()->json($data,200);
+    }7
     public function store(Request $request)
     {
+
+        // validasi data request
+        $request->validate([
+            "nama" => "required",
+            "nim" => "required",
+            "email" => "required",
+            "jurusan" => "required",
+        ]);
+
         // Menangkap data request
         $input = [
             'nama' => $request->nama,
@@ -49,16 +80,24 @@ class StudentController extends Controller
         $student = Student::find($id);
 
         if (!$student) {
-            return response()->json(['message' => 'Student not found'], 404);
+            $data =[
+                'message' => 'Student not found'
+            ];
+            return response()->json($data, 404);
         }
 
-        $student->nama = $request->input('nama', $student->nama);
-        $student->nim = $request->input('nim', $student->nim);
-        $student->email = $request->input('email', $student->email);
-        $student->jurusan = $request->input('jurusan', $student->jurusan);
+        // $student->nama = $request->input('nama', $student->nama);
+        // $student->nim = $request->input('nim', $student->nim);
+        // $student->email = $request->input('email', $student->email);
+        // $student->jurusan = $request->input('jurusan', $student->jurusan);
+        $student->update([
+        'nama' => $request->nama ?? $student->nama,
+        'nim' => $request->nim ?? $student->nim,
+        'email' => $request->email ?? $student->email,
+        'jurusan' => $request->jurusan ?? $student->jurusan
 
-        $student->save();
-
+        // $student->save();
+        ]);
         $data = [
             'message' => 'Student is updated successfully',
             'data' => $student,
@@ -69,6 +108,7 @@ class StudentController extends Controller
 
     public function destroy($id)
     {
+        
         $student = Student::find($id);
 
         if (!$student) {

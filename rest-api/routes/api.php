@@ -41,3 +41,6 @@ Route::put('/students/{id}', [StudentController::class, 'update']);
 Route::delete('/animals/{id}', [AnimalController::class, 'destroy']);
 
 Route::delete('/students/{id}', [StudentController::class, 'destroy']);
+
+// menampilkan detail resource
+Route::get('students/{id}', [StudentController::class,'show']);
